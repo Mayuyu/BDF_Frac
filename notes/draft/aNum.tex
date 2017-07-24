@@ -1,0 +1,669 @@
+\documentclass[11pt]{article}
+\usepackage{indentfirst}
+\usepackage{bm, mathrsfs, graphics,amssymb,amsmath,subeqnarray,setspace,graphicx,amsthm,epstopdf,subfigure,color}
+\setlength{\parindent}{2em}
+
+\def\b{\boldsymbol}
+\def\bs{\bm{\sigma}}
+\def\e{\epsilon}
+\def\z{\zeta}
+
+\newcommand{\bh}[1]{\bm{\hat{#1}}}
+\newcommand{\tcb}[1]{\textcolor{blue}{#1}}
+\newcommand{\tcr}[1]{\textcolor{red}{#1}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lmm}{Lemma}
+\newtheorem{rmk}{Remark}
+\newtheorem{pro}{Proposition}
+
+
+\begin{document}
+Consider the Caputo derivative $$
+\partial^{\alpha}u=\frac{1}{\Gamma(1-\alpha)}\int_0^t\frac{u_s(s)}{(t-s)^{\alpha}}ds
+$$
+Now, we approximate the derivative at $t=t^{n+1}=(n+1)k$. Define $I_m=[t^m, t^{m+1}]$.
+
+We interpolate $u$ on $I_m$: $$
+Iu(t)=u_{m-1}\frac{(t-t^m)(t-t^{m+1})}{2k^2}-u_m\frac{(t-t^{m-1})(t-t^{m+1})}{k^2}+u_{m+1}\frac{(t-t^m)(t-t^{m-1})}{2k^2}
+$$
+Then, $$
+(Iu)'=u_{m-1}\frac{t-t^{m+1/2}}{k^2}-2u_m\frac{t-t^m}{k^2}+u_{m+1}\frac{t-t^{m-1/2}}{k^2}
+$$
+Evaluating $t=t^{n+1}$, we get BDF2.
+
+The Taylor formula $$
+f(t)=f(s)+(t-s)f'(s)+\frac{1}{2}(t-s)f''(s)+\int_s^t\frac{1}{2}(t-\tau)^2 f'''(\tau)d\tau.
+$$
+Hence, using $(Iu)'$ to approximate $u'(s)$ will result in error 
+\begin{multline*}
+R_m(s)=\frac{s-t^{m+1/2}}{k^2}\int_s^{t^{m-1}}\frac{1}{2}(t^{m-1}-\tau)^2 u'''(\tau)d\tau-2\frac{s-t^m}{k^2}\int_s^{t^m}\frac{1}{2}(t^m-\tau)^2 u'''(\tau)d\tau\\
++\frac{s-t^{m-1/2}}{k^2}\int_s^{t^{m+1}}\frac{1}{2}(t^{m+1}-\tau)^2 u'''(\tau)d\tau
+\end{multline*}
+The total error will be $$
+r=\frac{1}{\Gamma(1-\alpha)}(r_0+\sum_{m=1}^n\int_{I_m}\frac{R_m(s)}{(t^{n+1}-s)^{\alpha}}ds)
+$$
+where $r_0$ is the one from the first interval $I_0=[0, k]$ on which we use linear approximation.
+
+\section{The coefficients}
+Let's evaluate $$
+k^{\alpha}(1-\alpha)\int_{I_m}\frac{(Iu)'(s)}{(t^{n+1}-s)^{\alpha}}ds=C_m^{m+1}u_{m+1}+C_m^mu_m+C_{m}^{m-1}u_{m-1}
+$$
+To find the coefficients, we set 
+\begin{multline*}
+\int_{t^m}^{t^{m+1}}\frac{s-c}{(t^{n+1}-s)^{\alpha}}ds
+=-\frac{1}{1-\alpha}(t^{n+1}-s)^{1-\alpha}(s-c)|_{t^m}^{t^{m+1}}
++\frac{1}{1-\alpha}\int_{t^m}^{t^{m+1}}(t^{n+1}-s)^{1-\alpha}ds\\
+=-\frac{1}{1-\alpha}(t^{n+1}-s)^{1-\alpha}(s-c)|_{t^m}^{t^{m+1}}
+-\frac{1}{(1-\alpha)(2-\alpha)}(t^{n+1}-s)^{2-\alpha}|_{t^m}^{t^{m+1}}
+\end{multline*}
+Hence, we find 
+\begin{multline*}
+C_m^{m+1}=(1-\alpha)k^{\alpha}\frac{1}{k^2}\int_{t^m}^{t^{m+1}}\frac{s-t^{m-1/2}}{(t^{n+1}-s)^{\alpha}}ds\\
+=-(n-m)^{1-\alpha}\frac{3}{2}+(n-m+1)^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}(n-m)^{2-\alpha}+\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}
+\end{multline*}
+Similarly, we find 
+\begin{gather*}
+C_m^m=2(n-m)^{1-\alpha}+\frac{2}{2-\alpha}(n-m)^{2-\alpha}
+-\frac{2}{2-\alpha}(n-m+1)^{2-\alpha}
+\end{gather*}
+and that
+\begin{multline*}
+C_m^{m-1}=-(n-m)^{1-\alpha}\frac{1}{2}-(n-m+1)^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}(n-m)^{2-\alpha}+\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}
+\end{multline*}
+These are only valid for $m\ge 1$.
+
+Hence, the derivative should be $$
+\frac{1}{k^{\alpha}}\sum_{m=0}^{n+1}b_{n+1-m}^{n+1}u_m=\frac{1}{k^{\alpha}\Gamma(2-\alpha)}(C_0^0u_0+C_0^1u_1+\sum_{m=1}^n(C_m^{m-1}u_{m-1}
++C_m^{m}u_m+C_m^{m+1}u_{m+1}))
+$$
+
+The coefficient of $u_{n+1}$ is given by $\Gamma(2-\alpha)b_{0}^{n+1}=C_n^{n+1}=\frac{1}{2}+\frac{1}{2-\alpha}>0$, which can be seen easily by the integral.
+
+The coefficient of $u_n$ is given by 
+\begin{gather*}
+\Gamma(2-\alpha)b_1^{n+1}=C_{n-1}^n+C_n^n=-\frac{3}{2}+2^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}+\frac{1}{2-\alpha}2^{2-\alpha}-\frac{2}{2-\alpha}
+\end{gather*}
+This number is $-2$ if $\alpha=1$ and $-1.5+1-0.5+2-1=0$ when $\alpha=0$. This number is negative: $$
+-1+\frac{2^{1-\alpha}}{2}+(-\frac{1}{2}-\frac{3}{2-\alpha}+\frac{2^{2-\alpha}}{2-\alpha})
+$$
+
+Then, for $2\le m\le n-1$, we find
+\begin{multline*}
+\Gamma(2-\alpha)b_{n+1-m}^{n+1}=C_{m-1}^m+C_m^m+C_{m+1}^m
+=-\frac{3}{2}(n-m+1)^{1-\alpha}+\frac{1}{2}(n-m+2)^{1-\alpha}
+-\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}\\
++\frac{1}{2-\alpha}(n-m+2)^{2-\alpha}
++2(n-m)^{1-\alpha}+\frac{2}{2-\alpha}(n-m)^{2-\alpha}
+-\frac{2}{2-\alpha}(n-m+1)^{2-\alpha}\\
+-(n-m-1)^{1-\alpha}\frac{1}{2}-(n-m)^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}(n-m-1)^{2-\alpha}+\frac{1}{2-\alpha}(n-m)^{2-\alpha}
+\end{multline*}
+which simplifies to
+\begin{multline*}
+-\frac{1}{2}(n-m-1)^{1-\alpha}-\frac{3}{2}(n-m+1)^{1-\alpha}+\frac{3}{2}(n-m)^{1-\alpha}+\frac{1}{2}(n-m+2)^{1-\alpha}\\
++\frac{1}{2-\alpha}(n-m+2)^{2-\alpha}
++\frac{3}{2-\alpha}(n-m)^{2-\alpha}
+-\frac{3}{2-\alpha}(n-m+1)^{2-\alpha}
+-\frac{1}{2-\alpha}(n-m-1)^{2-\alpha}
+\end{multline*}
+When $\alpha\to 1$, $b_i^{n+1}\to 0$ except $i=2$ because $0^{1-\alpha}$ tends to $0$ instead of $1$. The first term is a problem. Then, we see $b_{2}^{n+1}\to 1/2$. 
+
+For $m=n-1$, we find $$
+\Gamma(2-\alpha)b_{2}^{n+1}=-\frac{3}{2}2^{1-\alpha}+\frac{3}{2}+\frac{1}{2}3^{1-\alpha}
++\frac{1}{2-\alpha}3^{2-\alpha}
++\frac{3}{2-\alpha}-\frac{3}{2-\alpha}2^{2-\alpha}
+$$
+This coefficient is negative for $(0, 0.3x)$ and positive for $(0.3x, 1)$.
+
+For other coefficients $b_{n+1-m}(\alpha=0)=b_{n+1-m}(\alpha=1)=0$.  For other values, numerical computation shows that they are negative. Need to prove by Taylor expansion: $b_m=g(n-m+2)-3g(n-m+1)+3g(n-m)-g(n-m-1)$ where $g=\frac{1}{2-\alpha}x^{2-\alpha}+\frac{1}{2}x^{1-\alpha}$. Clearly, $g'''<0$ for $x\ge 1$. The value $$
+\int_{n-m-1}^{n-m}g' dx-2\int_{n-m}^{n-m+1}g' dx
++\int_{n-m+1}^{n-m+2}g' dx<0
+$$
+This is because $g'''<0$ implies that $g'$ is concave. It can be seen that $b_m$ increases to zero for $m\ge 4$ since $g''''>0$ for $x>3/2$. Direct computation shows that $b_3<b_4$.
+
+For $C_0^j$, we compute $$
+k^{\alpha}(1-\alpha)\int_0^{t^1}\frac{(u_1-u_0)/k}{(t^{n+1}-s)^{\alpha}}ds
+$$
+and find $$C_0^1=-n^{1-\alpha}+(n+1)^{1-\alpha}, C_0^0=-C_0^1<0$$.
+
+Then, we find 
+\begin{multline*}
+\Gamma(2-\alpha)b_n^{n+1}=C_2^1+C_1^1+C_0^1
+=-(n-2)^{1-\alpha}\frac{1}{2}-(n-1)^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}(n-2)^{2-\alpha}+\frac{1}{2-\alpha}(n-1)^{2-\alpha}\\
++2(n-1)^{1-\alpha}+\frac{2}{2-\alpha}(n-1)^{2-\alpha}
+-\frac{2}{2-\alpha}n^{2-\alpha}
++(n+1)^{1-\alpha}-n^{1-\alpha}
+\end{multline*}
+
+\begin{multline*}
+\Gamma(2-\alpha)b_n^{n+1}=-(n-2)^{1-\alpha}\frac{1}{2}+\frac{3}{2}(n-1)^{1-\alpha}
+-\frac{1}{2-\alpha}(n-2)^{2-\alpha}+\frac{3}{2-\alpha}(n-1)^{2-\alpha}\\
+-\frac{2}{2-\alpha}n^{2-\alpha}+(n+1)^{1-\alpha}-n^{1-\alpha}
+\end{multline*}
+It can be computed that $b_n(\alpha=0)=b_n(\alpha=1)=0$. For the middle values, it seems to be negative but we need to prove:
+\begin{multline*}
+\Gamma(2-\alpha)b_n^{n+1}=
+-(n-2)^{1-\alpha}\frac{1}{2}+\frac{3}{2}(n-1)^{1-\alpha}
+-\frac{3}{2}n^{1-\alpha}+\frac{1}{2}(n+1)^{1-\alpha}\\
+-\frac{1}{2-\alpha}(n-2)^{2-\alpha}+\frac{3}{2-\alpha}(n-1)^{2-\alpha}
+-\frac{3}{2-\alpha}n^{2-\alpha}+\frac{1}{2-\alpha}(n+1)^{2-\alpha}
+\\
++\frac{1}{2}n^{1-\alpha}+\frac{1}{2}(n+1)^{1-\alpha}
++\frac{1}{2-\alpha}n^{2-\alpha}
+-\frac{1}{2-\alpha}(n+1)^{2-\alpha}
+\end{multline*}
+The first two lines are negative by the previous arguments.
+For the last line, that is equal to $$
+\frac{1}{2}n^{1-\alpha}+\frac{1}{2}(n+1)^{1-\alpha}
+-\int_n^{n+1}x^{1-\alpha}dx<0
+$$
+because $x^{1-\alpha}$ is a concave function.
+ 
+   
+\begin{multline*}
+\Gamma(2-\alpha)b_{n+1}^{n+1}=C_1^0+C_0^0=
+-(n-1)^{1-\alpha}\frac{1}{2}-n^{1-\alpha}\frac{1}{2}
+-\frac{1}{2-\alpha}(n-1)^{2-\alpha}+\frac{1}{2-\alpha}n^{2-\alpha}
++n^{1-\alpha}-(n+1)^{1-\alpha}\\
+=-(n-1)^{1-\alpha}\frac{1}{2}+\frac{1}{2}n^{1-\alpha}
+-\frac{1}{2-\alpha}(n-1)^{2-\alpha}+\frac{1}{2-\alpha}n^{2-\alpha}
+-(n+1)^{1-\alpha}
+\end{multline*}
+Then, $b_{n+1}^{n+1}(\alpha=0)=-1$ and $b_{n+1}^{n+1}(\alpha=1)=0$. This number seems to be negative: 
+\begin{multline*}
+\int_{n-1}^nx^{1-\alpha}dx-(n+1)^{1-\alpha}+\frac{1}{2}n^{1-\alpha}
+-\frac{1}{2}(n-1)^{1-\alpha}
+<-(n+1)^{1-\alpha}+\frac{3}{2}n^{1-\alpha}-\frac{1}{2}(n-1)^{1-\alpha}\\
+=-\int_n^{n+1}+\frac{1}{2}\int_{n-1}^n\alpha x^{\alpha-1}dx
+\end{multline*}
+
+Consider the sequence $b^{n+1}=(b_0^{n+1}, \ldots, b_n^{n+1}, b_{n+1}^{n+1})$. Then, $\partial^{\alpha}u=k^{-\alpha}b^{n+1}*u$.
+
+Clearly, the first $n-1$ components are independent of $n$. Hence, to compute $k^{-\alpha}b^{n+2}$, we only need to change the last two components and add one more component. Then, we convolve $b^{n+2}$ with $u$ and get the derivative.
+
+To summarize, $\alpha\to 1$, we have BDF2. Also, for $\alpha<0.3x$, then, all coefficients for $u_m, m\le n$ are negative. 
+For $\alpha=0$, the derivative becomes $u_{n+1}-u_0$ which is the exact value of integral $\int_0^{t^{n+1}}u_s ds$, and it makes sense.
+
+\section{Accuracy}
+Now, we estimate the remainder terms.
+
+For the accuracy, a rough estimate would be $|R_m|\le Ck^2$. Then, $$
+r\le \frac{1}{\Gamma(1-\alpha)}(r_0+Ck^2\int_{t^1}^{t^{n+1}}\frac{1}{(t^{n+1}-s)^{\alpha}}ds)\le \frac{C}{\Gamma(2-\alpha)}T^{1-\alpha}k^2
+$$
+where $$
+r_0=\int_0^k\frac{u'(s)-(u_1-u_0)/k}{(t^{n+1}-s)^{\alpha}}ds
+\sim 
+O(k^3)
+$$
+since $1/(t^{n+1}-s)^{\alpha}$ is smooth on the interval $(0, k)$.
+The scheme is at least uniformly second order.
+
+To achieve better accuracy estimates, one may have to evaluate the integrals. 
+\begin{multline*}
+\frac{1}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^{m-1}}^{t^{m+1}}
+u'''(\tau)(t^{m-1}-\tau)^2\int_{\min(t^m,\tau)}^{t^{m+1}}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}dsd\tau\\
+-\frac{2}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^m}^{t^{m+1}}
+(t^m-\tau)^2u'''(\tau)\int_{\tau}^{t^{m+1}}\frac{t^{m}-s}{(t^{n+1}-s)^{\alpha}}dsd\tau\\
++\frac{1}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^m}^{t^{m+1}}
+(t^{m+1}-\tau)^2u'''(\tau)\int_{t^m}^{\tau}\frac{s-t^{m-1/2}}{(t^{n+1}-s)^{\alpha}}dsd\tau
+\end{multline*}
+
+For the first integral, we consider first $$
+\frac{1}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^{m-1}}^{t^{m}}
+u'''(\tau)(t^{m+1}-\tau)^2\int_{t^m}^{t^{m+1}}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}dsd\tau
+$$
+Note that $\int_{t^m}^{t^{m+1}}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}ds$
+is negative for all $m$, we find the absolute value is less than $$
+\frac{Ck}{\Gamma(1-\alpha)}\int_{t^m}^{t^{m+1}}\frac{s-t^{m+1/2}}{(t^{n+1}-s)^{\alpha}}ds
+$$
+where $C\sim \sup|u'''|$ is independent of $n,m,\alpha$.
+Evaluating the integral exactly, we have
+\begin{multline*}
+\int_{t^m}^{t^{m+1}}\frac{s-t^{m+1/2}}{(t^{n+1}-s)^{\alpha}}ds
+=\frac{k^{2-\alpha}}{1-\alpha}[
+\frac{1}{2-\alpha}((n-m+1)^{2-\alpha}-(n-m)^{2-\alpha})
+-\frac{1}{2}((n-m+1)^{1-\alpha}+(n-m)^{1-\alpha})]
+\end{multline*}
+This number $\le$ $\frac{Ck^{2-\alpha}}{1-\alpha}(n-m)^{-1-\alpha}$ by Taylor expansion about $n-m+1/2$, where $C=\sup_{\alpha}\alpha(1-\alpha)$ is independent of $m,\alpha, n$.
+The first part is therefore bounded by $\frac{Ck^{5-\alpha}}{1-\alpha}(n-m)^{-1-\alpha}$
+
+Now, we consider the remaining terms.
+\begin{multline*}
+\frac{1}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^{m}}^{t^{m+1}}
+u'''(\tau)(t^{m-1}-\tau)^2\int_{\tau}^{t^{m+1}}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}dsd\tau\\
+-\frac{2}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^m}^{t^{m+1}}
+(t^m-\tau)^2u'''(\tau)\int_{\tau}^{t^{m+1}}\frac{t^{m}-s}{(t^{n+1}-s)^{\alpha}}dsd\tau\\
++\frac{1}{\Gamma(1-\alpha)}\frac{1}{2k^2}\int_{t^m}^{t^{m+1}}
+(t^{m+1}-\tau)^2u'''(\tau)\int_{t^m}^{\tau}\frac{s-t^{m-1/2}}{(t^{n+1}-s)^{\alpha}}dsd\tau
+\end{multline*}
+Consider 
+\begin{multline*}
+P_m(\tau)=(t^{m-1}-\tau)^2\int_{\tau}^{t^{m+1}}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}ds\\
+-2(t^m-\tau)^2\int_{\tau}^{t^{m+1}}\frac{t^{m}-s}{(t^{n+1}-s)^{\alpha}}ds
++(t^{m+1}-\tau)^2\int_{t^m}^{\tau}\frac{s-t^{m-1/2}}{(t^{n+1}-s)^{\alpha}}ds\\
+=(t^{m-1}-\tau)^2k^{2-\alpha}[\frac{1}{2}(n-m)^{1-\alpha}+\frac{1}{2-\alpha}(n-m)^{2-\alpha}]+\\
+(-2)(t^m-\tau)^2k^{2-\alpha}[(n-m)^{1-\alpha}+\frac{1}{2-\alpha}(n-m)^{2-\alpha}]\\
++(t^{m+1}-\tau)^2k^{2-\alpha}[\frac{1}{2}(n-m+1)^{1-\alpha}+\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}]\\
+-\frac{2k^2}{2-\alpha}(t^{n+1}-\tau)^{2-\alpha}
+\end{multline*}
+$P_m(\tau=t^{m+1})=0$ and
+$P_m(\tau=t^m)=k^2\int_{I_m}\frac{t^{m+1/2}-s}{(t^{n+1}-s)^{\alpha}}ds<0$.
+
+We find that 
+\begin{multline*}
+(1-\alpha)P'=2(\tau-t^{m-1})k^{2-\alpha}[\frac{1}{2}(n-m)^{1-\alpha}+\frac{1}{2-\alpha}(n-m)^{2-\alpha}]+\\
+(-2)2(\tau-t^m)k^{2-\alpha}[(n-m)^{1-\alpha}+\frac{1}{2-\alpha}(n-m)^{2-\alpha}]\\
++2(\tau-t^{m+1})k^{2-\alpha}[\frac{1}{2}(n-m+1)^{1-\alpha}+\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}]\\
++2k^2(t^{n+1}-\tau)^{1-\alpha}
+\end{multline*}
+We can show that $P'(t^m)<0$. $P'(t^{m+1})=0$. 
+
+Further, we check that
+\begin{multline*}
+(1-\alpha)P''=
+-3k^{2-\alpha}(n-m)^{1-\alpha}-\frac{2k^{2-\alpha}}{2-\alpha}(n-m)^{2-\alpha}+\\
++k^{2-\alpha}[(n-m+1)^{1-\alpha}+\frac{2}{2-\alpha}(n-m+1)^{2-\alpha}]\\
+-2k^2(1-\alpha)(t^{n+1}-\tau)^{-\alpha}
+\end{multline*}
+hence, $P''$ decreases.  
+\begin{multline*}
+(1-\alpha)P''(t^{m+1})/k^{2-\alpha}=
+-3(n-m)^{1-\alpha}-\frac{2}{2-\alpha}(n-m)^{2-\alpha}+\\
++[(n-m+1)^{1-\alpha}+\frac{2}{2-\alpha}(n-m+1)^{2-\alpha}]
+-2(1-\alpha)(n-m)^{-\alpha}\\
+=(n-m+1)^{1-\alpha}-3(n-m)^{1-\alpha}
++2\int_{n-m}^{n-m+1}x^{1-\alpha}dx-2(1-\alpha)(n-m)^{-\alpha}
+\end{multline*}
+Using the inequality $x^{1-\alpha}\le (n-m)^{1-\alpha}+(1-\alpha)(n-m)^{-\alpha}(x-(n-m))$ since the function is concave, we find $$
+(1-\alpha)P''(t^{m+1})/k^{2-\alpha}\le (n-m+1)^{1-\alpha}-(n-m)^{1-\alpha}
+-(1-\alpha)(n-m)^{-\alpha}\le 0.
+$$
+Hence, $P''$ could be positive on $\tau\in (t^m, t_0)$ and negative on $(t_0, t^{m+1})$ or all negative on $(t^m, t^{m+1})$. Together with the fact $P'(t^{m+1})=0$, we know either $P$ either first decreases and then increases or increases for all time. Since $P(t^{m+1})=0$ and $P(t^m)<0$, we find that $P\le 0,\tau\in (t^m, t^{m+1})$.
+
+This allows us to conclude $$
+\int_{t^m}^{t^{m+1}}u'''(\tau)P_m(\tau)d\tau
+=u'''(\xi) \int_{I_m}P_m(\tau)d\tau
+$$
+\begin{multline*}
+(1-\alpha)\int P_m(\tau)d\tau=\frac{k^3}{2}k^{2-\alpha}(n-m)^{1-\alpha}+
+\frac{5}{3}\frac{1}{2-\alpha}(n-m)^{2-\alpha}\\
++(\frac{k^3}{3})k^{2-\alpha}[\frac{1}{2}(n-m+1)^{1-\alpha}+\frac{1}{2-\alpha}(n-m+1)^{2-\alpha}]\\
++\frac{2k^2}{(2-\alpha)(3-\alpha)}(n-m)^{3-\alpha}k^{3-\alpha}
+-\frac{2k^2}{(2-\alpha)(3-\alpha)}(n-m+1)^{3-\alpha}k^{3-\alpha}
+\end{multline*}
+We do Taylor expansion about $n-m+1/2$. We find $2-\alpha$, $1-\alpha$, $-\alpha$ all cancel out. 
+The nonzero power will be $(n-m)^{-1-\alpha}$, and hence summable.
+
+Hence, the remaining terms can also be controlled by $$
+\frac{C}{1-\alpha}k^{5-\alpha}(n-m)^{-1-\alpha}
+$$
+Hence, $$
+r\le \frac{1}{\Gamma(1-\alpha)}r_0+\frac{Ck^{3-\alpha}}{\Gamma(2-\alpha)}\sum_m (n-m)^{-1-\alpha}\le Ck^{3-\alpha}
+$$
+where $C$ is uniform for $\alpha\in [0,1]$
+
+\section{Stability region}
+If $u=1$, then the interpolation is exact and we should have $$
+\frac{1}{k^{\alpha}}\sum_{m=0}^n b_m^n=\partial^{\alpha}1=0.
+$$
+If we apply the scheme to the ODE $u'=\lambda u$, then we have $$
+\sum_{m=0}^n u_{m}b^n_{n-m}=k^{\alpha}\lambda u_n
+$$
+
+We define $z=k^{\alpha}\lambda$. Clearly, the recursion formula is given by $$
+u_n=-\frac{1}{b_0-z}\sum_{m=1}^{n}b_{m}^n u_{n-m}
+$$
+If $n$ is sufficiently large, the initial data is not significant. This will roughly have a characteristic polynomial $$
+(b_0-z)\zeta^n=-\sum_{m=1}^n b_m^n \zeta^{n-m}
+$$
+Roughly, if the root $|\zeta|\le 1$, then we will be fine. This form is not convenient. Then, we have $$
+b_0-z+\sum_{m=1}^n b_m^n\zeta^{-m}=0.
+$$
+We say `roughly' because the characteristic function or stability region should not depend on $n$.
+
+As $n\to\infty$, the sequence $b^n$ will tends to $b^{\infty}$. It can be shown that $b^n\to b^{\infty}$ is pointwise and also in $l^p$. Then, $\sum_m b_m^{\infty}=0$. Also, the only possible positive coefficients would be $b_0$ and $b_2$.
+
+Hence, we define a power series $$
+f(\eta, z)=b_0-z+\sum_{m=1}^{\infty} b_m^{\infty}\eta^m
+$$
+ The coefficient decays like $O(m^{-1-\alpha})$ \tcr{?}. The the radius of convergence is $1$ and the series also converges on the boundary of the unit disk. We define the stability region to be the set of those $z$ such that $f$ has no zero in the unit disk.
+
+The scheme is called $A$-stable if the stability region contains the whole left half plane.
+
+ In the case $b_2\le 0$, the scheme is $A$-stable. This is because all coefficients except $b_0$ are all negative. $|b_0-z|\le \sum_{m=1}^{\infty}(-b_m^{\infty})|\eta|^m\le b_0$
+if $|\eta|\le 1$. 
+
+Now, assume $b_2>0$. It would suffice to show $\inf_{z\in D(0,1)}Re(f(\eta, 0))\ge 0$. Recall that $b_1<0, b_2>0$
+
+Since $-|\sum_{m=3}^{\infty}b_m\eta^m|\ge -\sum_{m=3}^{\infty}|b_m|
+=\sum_{m=3}^{\infty}b_m=-(b_0+b_1+b_2)$, we find 
+ $Re(f(\eta,0))\ge b_0+Re(b_1\eta+b_2\eta^2)-(b_0+b_1+b_2)$
+
+Setting $\eta=r\cos\theta$ results in the function $$
+h(r,\theta)=|b_1|(1-r\cos\theta)-b_2(1-r^2\cos(2\theta)).
+$$
+This function is positive for $\cos\theta\le 0$ because $|b_1|\ge 2b_2$. For $\cos\theta\ge 0$, $h_r=-|b_1|\cos\theta+2b_2r\cos(2\theta)\le 0$ since $r\cos(2\theta)\le\cos(\theta)$. The minimum value is achieved on $r=1$. 
+
+Set $h(\theta)=|b_1|(1-\cos\theta)-b_2(1-\cos(2\theta))$ with $0\le\theta\le \pi/2$. We find that $h(0)=0$, which is desired since $f(1,0)=0$. $h'=\sin\theta (|b_1|-4b_2\cos\theta)$.
+It's clear that $h\ge 0$ if and only if $|b_2|\ge 4b_2$.
+
+We find that $$
+\Gamma(2-\alpha)(|b_1|-4b_2)=-\frac{9}{2}-6*3^{-\alpha}-\frac{36}{2-\alpha}3^{-\alpha}+11*2^{-\alpha}-\frac{9}{2-\alpha}
++\frac{44}{2-\alpha}2^{-\alpha}=g_2(\alpha)
+$$
+We want to show that $g_2(\alpha)\ge 0$. This seems to be true. $g_2(1)=0$ and $g_2(0.3x)>0$.  If this is true, then the scheme is $A$-stable.
+
+\section{The FPDE}
+Consider
+\begin{gather*}
+\partial^{\alpha}_tu=\Delta u-\nabla\cdot(\rho\nabla c)\\
+-\Delta c=\rho
+\end{gather*}
+
+Integrating by parts, $$
+\frac{u(t)-u(0)}{t^{\alpha}}+\alpha\int_0^t\frac{u(t)-u(s)}{(t-s)^{1+\alpha}}ds
+=\ldots
+$$
+It is clear that the difference scheme is a kind of approximation for this.
+$b_0\approx \frac{1}{t^{\alpha}}+\alpha\int_0^{t-k}\frac{1}{(t-s)^{1+\alpha}}ds$, etc..
+
+Since $$
+\langle u, \Delta u-\nabla\cdot(\rho\nabla c)\rangle
+=-\|\nabla u\|_2^2+\frac{1}{2}\|\rho^3\|_1,
+$$
+and $\|\rho^3\|_1\le C\|\rho\|_1\|\nabla\rho\|_2^2$ by Gargolidardo-Nirenberg inequality for dimension $2$, we see that if the initial mass is small, then, 
+ $$
+\langle u(t), \frac{u(t)-u(0)}{t^{\alpha}}+\alpha\int_0^t\frac{u(t)-u(s)}{(t-s)^{1+\alpha}}ds\rangle\le 0. 
+$$
+Since $a(a-b)\ge \frac{1}{2}(a^2-b^2)$, then $\|u(t)\|_2^2$ decays.
+
+Clearly, in numerics, if we approximate $-\Delta c=\rho$ with $\rho$ in previous time steps. The Gargoliardo inequality can't be applied and we don't have the decay claim. Instead, we will see that we kind of have approximation for the following equation: $$
+\partial^{\alpha}_t\|u\|_2^2\le \lambda \|u\|_2^2
+$$
+and we assume $0<\lambda <1$ (this can be guaranteed in numerics if we apply Cauchy-Schwartz carefully). For the continuous version, the solution is bounded. For the discrete case, it seems we have some trouble but anyway, we have some partial results. We start with some lemmas..
+
+\subsection{Some lemmas}
+
+Given two sequences $a$ and $c$. The convolution is defined as $(a*c)_n=\sum_{m=0}^n a_mc_{n-m}$. The generating function of $a*c$ is simply $F_a(z)F_c(z)$. The convolution identity is $\delta_d=(1,0,0,\ldots)$.
+
+As we have seen, the difference scheme we have derived is $(b^{n+1}*u)_{n+1}$ where $b^{n+1}$ is a sequence with length $n+1$. Though, this sequence depends on $n$, there is a limiting sequence $b=b^{\infty}$, and more importantly, $b^{n+1}$ agrees with $b$ exactly in the first $n-2$ components. Then, we can roughly think the difference scheme is $(b*u)_{n+1}$. To figure out some properties, we need to find the convolution inverse of $b$, the limiting sequence. 
+
+The first lemma is about the asymptotic behavior of the convolution inverse.
+\begin{lmm}
+Suppose $b=\{b_n\}$ is a sequence satisfying $\sum_{n=0}^{\infty}b_n=0$
+and $b_0>0$. Suppose further that $b_n=\frac{1}{\Gamma(1-\gamma)}n^{-1-\gamma}(1+O(\frac{1}{n}))$, where $0<\gamma<1$. Let $F(z)$ be its generating function $F(z)=\sum_{n=0}^{\infty}b_n z^n$. Then, 
+\begin{enumerate}
+\item $$
+F(z)-(1-z)^{\gamma}=(1-z)G(z)
+$$
+where $G(z)$ is bounded in the unit disk.
+\item Let $b^{(-1)}$ be the convolution inverse of $b$. Its generatating function $F(z)^{-1}\sim (1-z)^{-\gamma}$ and thus $b^{(-1)}_n=[z^n]F(z)^{-1}\sim \frac{1}{\Gamma(\gamma)}n^{\gamma-1}$ 
+\end{enumerate}
+\end{lmm}
+\begin{proof}
+Let $H(z)=F(z)-(1-z)^{\gamma}$. Then, $H(1)=0$. Consider the Taylor series of $H$: $$
+H(z)=\sum_{n=0}^{\infty}d_n z^n.
+$$
+By the asymptotic behavior of $b$ and the asymptotic behavior of the coefficients of $(1-z)^{\gamma}$, we find
+$$d_n=O(\frac{1}{n^{2+\gamma}}).$$ 
+
+Now consider $$
+\frac{H(z)}{1-z}=\frac{H(z)-H(1)}{1-z}=\sum \frac{d_n(z^n-1)}{1-z}.
+$$
+Then, for each term, 
+$|d_nz^n-d_n|(1-z)^{-1}\le Cnd_n$ where $C$ is independent of $n$ and $z\in D(0,1)$. Since $\sum n|d_n|$ converges. Hence, $G(z)=H(z)/(1-z)$ is bounded. The first claim is proved.
+
+
+Using the first claim, we find that $$
+F(z)^{-1}=(1-z)^{-\gamma}\frac{1}{1+(1-z)^{1-\gamma}G(z)}
+$$
+This implies that as $z\sim 1$, $F(z)^{-1}\sim (1-z)^{-\gamma}$.
+
+By the lemma in the book of `analytical combinartorics', we have 
+$b^{(-1)}_n=[z^n]F(z)^{-1}\sim \frac{1}{\Gamma(\gamma)}n^{\gamma-1}$.
+\end{proof}
+\begin{rmk}
+Actually, we should have $G(1)=0$ also. Further, it should be the case that 
+$$
+F(z)-(1-z)^{\gamma}=(1-z)^{1+\gamma-\epsilon}G(z)
+$$
+and $G$ is still bounded, but we don't need these.
+\end{rmk}
+
+
+The second lemma is about how to solve the convolution inequality:
+\begin{lmm}
+Suppose $b=\{b_n\}$ is a sequence satisfying the properties above. Let $E=\{E^n\}$ be a nonnegative sequence. Let $b^{(-1)}$ be the convolution inverse of $b$, which has generating function $1/F(z)$. Let $k=T/N$ where $N$ is a big integer.
+
+If one of the following two conditions is satisfied:
+
+ (i). $\exists \alpha\ge 0,\beta\ge 0$,
+ $$
+k^{-\gamma}|(b*E)_{n+1}|\le \alpha+\beta E^n,\forall 0\le n\le N.
+$$
+
+(ii). $b^{(-1)}_n\ge 0$ and $\exists \alpha\ge0, \beta\ge0$,
+$$
+k^{-\gamma}(b*E)_{n+1}\le \alpha+\beta E^n,\forall 0\le n\le N.
+$$
+Then, $$
+E^n\le C(T)E_{\gamma}(C_1(nk)^{\gamma}),\ \forall 0\le n\le N.
+$$
+\end{lmm}
+\begin{proof}
+Let $H_n=k^{-\gamma}(b*E)_{n}$ and consider the sequence $H=\{H_n\}$. Then clearly, we have $E^n=k^{\gamma}(b^{(-1)}*H)_n$ for all $n\ge 0$.
+
+By the asymptotic behavior of $b^{(-1)}_n$, there exists $C$ independent of $n$ such that $|b^{(-1)}_n|\le C \frac{1}{\Gamma(\gamma)}(n+1)^{\gamma-1}$ for all $n\ge 0$.
+
+Now, consider only $0\le n\le N$:
+
+If the first case happens, we have 
+\begin{gather*}
+E^n\le k^{\gamma}\sum_{i=0}^n |b_{n-j}^{-1}| |H_{j}|
+\le k^{\gamma}|b_n^{-1}|b_0E_0+Ck^{\gamma}\sum_{j=1}^{n} \frac{1}{\Gamma(\gamma)}(n-j+1)^{\gamma-1}
+(\alpha+\beta E^{j-1})\\
+\le C+k^{\gamma}\frac{C_1}{\Gamma(\gamma)}\sum_{j=0}^{n-1}(n-j)^{\gamma-1}E^j,\ \forall 0\le n\le N
+\end{gather*}
+Here, we have used the fact $k^{\gamma}\sum (n-j)^{\gamma-1}\sim k^{\gamma}n^{\gamma}\le T^{\gamma}=const$
+
+if the second case happens, then, we have 
+\begin{gather*}
+E^n\le k^{\gamma}\sum_{j=0}^n b_{n-j}^{-1} H_{j}
+\le k^{\gamma}b_n^{-1}b_0E_0+Ck^{\gamma}\sum_{j=1}^{n} \frac{1}{\Gamma(\gamma)}(n-j+1)^{\gamma-1}
+(\alpha+\beta E^{j-1})\\
+\le C+\frac{C_1}{\Gamma(\gamma)}\sum_{j=0}^{n-1}(n-j)^{\gamma-1}E^j,\ \forall 0\le n\le N
+\end{gather*}
+The discrete Gronwall inequality guarantees that $E^n$ has the bound as indicated.
+\end{proof}
+
+As a variation, a similar lemma that may be useful for our purpose is as following
+\begin{lmm}
+Suppose $b=\{b_n\}$ is a sequence satisfying the properties above. Let $E=\{E^n\}$ be a nonnegative sequence. Let $b^{(-1)}$ be the convolution inverse of $b$, which has generating function $1/F(z)$. Let $k=T/N$ where $N$ is a big integer.
+
+If one of the following two conditions is satisfied:
+
+ (i). $\exists \alpha_n\ge 0,\beta\ge 0$, $\alpha_n\le Ck^{-\gamma}(1+n)^{-\gamma}$
+ $$
+k^{-\gamma}|(b*E)_{n+1}|\le \alpha_n+\beta E^n,\forall 0\le n\le N.
+$$
+
+(ii). $b^{(-1)}_n\ge 0$ and $\exists \alpha_n\ge0, \beta\ge0$, $\alpha_n\le Ck^{-\gamma}(1+n)^{-\gamma}$
+$$
+k^{-\gamma}(b*E)_{n+1}\le \alpha_n+\beta E^n,\forall 0\le n\le N.
+$$
+Then, $$
+E^n\le C(T)E_{\gamma}(C_1(nk)^{\gamma}),\ \forall 0\le n\le N.
+$$
+\end{lmm}
+\begin{proof}
+Let $H_n=k^{-\gamma}(b*E)_{n}$ and consider the sequence $H=\{H_n\}$. Then clearly, we have $E^n=k^{\gamma}(b^{(-1)}*H)_n$ for all $n\ge 0$.
+
+By the asymptotic behavior of $b^{(-1)}_n$, there exists $C$ independent of $n$ such that $|b^{(-1)}_n|\le C \frac{1}{\Gamma(\gamma)}(n+1)^{\gamma-1}$ for all $n\ge 0$.
+
+Now, consider only $0\le n\le N$:
+
+If the first case happens, we have 
+\begin{gather*}
+E^n\le k^{\gamma}\sum_{i=0}^n |b_{n-j}^{-1}| |H_{j}|
+\le k^{\gamma}|b_n^{-1}|b_0E_0+Ck^{\gamma}\sum_{j=1}^{n} \frac{1}{\Gamma(\gamma)}(n-j+1)^{\gamma-1}
+(\alpha_{j-1}+\beta E^{j-1})\\
+\le C+k^{\gamma}\frac{C_1}{\Gamma(\gamma)}\sum_{j=0}^{n-1}(n-j)^{\gamma-1}E^j,\ \forall 0\le n\le N
+\end{gather*}
+Here, we have used the fact $k^{\gamma}\sum (n-j)^{\gamma-1}k^{-\gamma}j^{-\gamma}\sim 1=const$
+
+if the second case happens, then, we have 
+\begin{gather*}
+E^n\le k^{\gamma}\sum_{j=0}^n b_{n-j}^{-1} H_{j}
+\le k^{\gamma}b_n^{-1}b_0E_0+Ck^{\gamma}\sum_{j=1}^{n} \frac{1}{\Gamma(\gamma)}(n-j+1)^{\gamma-1}
+(\alpha_{j-1}+\beta E^{j-1})\\
+\le C+\frac{C_1}{\Gamma(\gamma)}\sum_{j=0}^{n-1}(n-j)^{\gamma-1}E^j,\ \forall 0\le n\le N
+\end{gather*}
+The discrete Gronwall inequality guarantees that $E^n$ has the bound as indicated.
+\end{proof}
+
+
+\subsection{First order scheme}
+Consider the first order scheme. The sequence is given by $b^n$ for time $n$. Importantly, $b^n$ is exactly, the $n$-subsequence of the limiting sequence $b=b^{\infty}$. Another nice property is that $b_0>0$ and $b_m\le 0$ for all $m\ge 1$. Let $E^n=\|\rho^n\|_2^2$
+Then, we are able to derive $$
+k^{-\gamma}(b^{n}*E)_n\le CE^{n-1}
+$$
+where $b^{n}*E$ is a sequence with length $n$.
+
+
+Consider the first order time discrete approximation: $$
+\frac{1}{k^{\alpha}}(b_0\rho^{n+1}-\sum_{m=1}^{n+1}|b_m|\rho^{n+1-m})=\Delta\rho^{n+1}-\nabla\cdot(\rho^{n+1}\nabla c^{n+1})
+$$
+where $b_0=\sum_{m=1}^{n+1}|b_m|$.
+
+If we multiply $\rho^{n+1}$ and integrate, we obtain on right hand side: $$
+-\|\nabla\rho^{n+1}\|_2^2+\frac{1}{2}\|\rho^n(\rho^{n+1})^2\|_1
+$$ 
+For left hand side, we have
+\begin{multline*}
+\frac{1}{k^{\alpha}}(b_0\|\rho^{n+1}\|_2^2-\sum_{m=1}^{n+1}|b_m|\langle \rho^{n+1-m}, \rho^{n+1}\rangle)
+\ge \frac{1}{k^{\alpha}}(b_0\|\rho^{n+1}\|_2^2-\sum_{m=1}^{n+1}|b_m|\frac{1}{2}(\|\rho^{n+1}\|^2+\|\rho^{n+1-m}\|^2))\\
+=\frac{1}{2}\frac{1}{k^{\alpha}}(b_0\|\rho^{n+1}\|_2^2-\sum_{m=1}^{n+1}|b_m|\|\rho^{n+1-m}\|^2)
+\end{multline*}
+For right hand side, we have $$
+\le -\|\nabla\rho^{n+1}\|_2^2+C\|\rho^n\|_2\|\rho^{n+1}\|_2\|\nabla\rho^{n+1}\|_2
+\le -\|\nabla\rho^{n+1}\|_2^2+\frac{1}{2}\lambda\|\rho^n\|_2^2+C\|\rho^{n+1}\|_2^2\|\nabla\rho^{n+1}\|_2^2
+$$
+By assuming the small data, then we have 
+\begin{gather*}
+\frac{1}{k^{\alpha}}(b_0\|\rho^{n+1}\|_2^2-\sum_{m=1}^{n+1}|b_m|\|\rho^{n+1-m}\|^2)
+\le \lambda \|\rho^n\|_2^2
+\end{gather*}
+
+\begin{pro}
+The first order scheme for the KS is stable with small initial data.
+\end{pro}
+\begin{proof}
+Let $b=b^{\infty}$ be the limit sequence.
+
+As we know $b_0>0$ and $b_m<0$ for all $m\ge 1$. Then, we find that all components of $b^{(-1)}$ are positive.
+
+We have $b^n$ to be the sequence for the scheme at time $n$. We let $E$ be the sequence of $\|\rho^n\|_2^2$.
+
+By what has been computed, $b^n$ is exactly the same as the subsequence of $b$ for the first $n-1$ components. $$
+k^{-\gamma}(b^n*E)_n=k^{-\gamma}(b*E)_n+k^{-\gamma}(b_n^n-b_n)E^0\le CE^{n-1},\ \forall 0\le n\le N.
+$$
+
+Note that though $b_n=O(n^{-1-\gamma})$, $b_n-b_n^n=O(n^{-\gamma})$.
+
+Applying the variant version of the lemma above shows that the first order KS scheme is stable.
+\end{proof}
+
+\section{Second order scheme}
+
+For $\alpha<0.3x$, $b$ has similar properties with the first order scheme. Using similar techniques and the variant lemma, we conclude
+\begin{pro}
+The second order scheme for the KS is stable if $\alpha<0.3x$ and the initial data is small.
+\end{pro}
+
+Consider the case $\alpha>0.3x$ and $b_2$ can be negative.
+
+Let $b^{n+1}$ be the sequence for time $t^{n+1}$. $b^{n+1}$ agrees with $b$ for the first $n-1$ components. The equations read
+\begin{gather*}
+k^{-\gamma}(b^{n+1}*\rho)_{n+1}=\Delta\rho^{n+1}-\nabla(\rho^{n+1}\nabla c^{n+1}),\\
+-\Delta c^{n+1}=2\rho^n-\rho^{n-1}
+\end{gather*}
+Multiplying $\rho^{n+1}$ on the first equation and integrating:
+\begin{multline*}
+-\|\nabla\rho^{n+1}\|^2+\frac{1}{2}\|(\rho^{n+1})^2(2\rho^n-\rho^{n-1})\|_1
+\le -(1-C\|\rho^{n+1}\|_2^2)\|\nabla\rho^{n+1}\|_2^2+\\
+\lambda(\|\rho^n\|^2+\|\rho^{n-1}\|^2)
+\end{multline*}
+Assuming small initial data, this is bounded by $$
+\lambda(\|\rho^n\|^2+\|\rho^{n-1}\|^2)
+$$
+
+Now considering left hand side. We write
+\begin{multline*}
+(b^{n+1}*\rho)_{n+1}
+=b_0\rho^{n+1}+b_1\rho^n+b_2\rho^{n-1}
++\sum_{m=3}^{n-1}b_m\rho^{n+1-m}+b^{n+1}_n\rho^1+b^{n+1}_{n+1}\rho^0\\
+=-\frac{b_1}{2}(\frac{3}{2}\rho^{n+1}-2\rho^n+\frac{1}{2}\rho^{n-1})
++(b_0+\frac{3}{4}b_1)\rho^{n+1}
++(b_2+\frac{b_1}{4})\rho^{n-1}
++\sum_{m=3}^{n-1}b_m\rho^{n+1-m}+b^{n+1}_n\rho^1+b^{n+1}_{n+1}\rho^0
+\end{multline*}
+Since $(b_0+\frac{3}{4}b_1)+(b_2+\frac{1}{4}b_2)+\sum\ldots=0$ still holds and $b_0+\frac{3}{4}b_1>0, b_2+\frac{1}{4}b_2<0, b_m<0$, then
+\begin{multline*}
+\langle \rho^{n+1}, (b_0+\frac{3}{4}b_1)\rho^{n+1}
++(b_2+\frac{b_1}{4})\rho^{n-1}
++\sum_{m=3}^{n-1}b_m\rho^{n+1-m}+b^{n+1}_n\rho^1+b^{n+1}_{n+1}\rho^0\rangle\\
+\ge \frac{1}{2}\left((b_0+\frac{3}{4}b_1)\|\rho^{n+1}\|^2
++(b_2+\frac{b_1}{4})\|\rho^{n-1}\|^2
++\sum_{m=3}^{n-1}b_m\|\rho^{n+1-m}\|^2+b^{n+1}_n\|\rho^1\|^2+b^{n+1}_{n+1}\|\rho^0\|^2\right)
+\end{multline*}
+Further, 
+\begin{multline*}
+\langle \rho^{n+1}, \frac{3}{2}\rho^{n+1}-2\rho^n+\frac{1}{2}\rho^{n-1}\rangle
+\ge \frac{1}{4}(\|\rho^{n+1}\|_2^2-\|\rho^n\|_2^2+\|2\rho^{n+1}-\rho^n\|_2^2-\|2\rho^n-\rho^{n-1}\|_2^2)
+\end{multline*}
+Since $-b_1>0$, we have
+\begin{multline*}
+-\frac{b_1}{8}k^{-\gamma}(\|\rho^{n+1}\|_2^2-\|\rho^n\|_2^2+\|2\rho^{n+1}-\rho^n\|_2^2-\|2\rho^n-\rho^{n-1}\|_2^2)\\
++\frac{1}{2}k^{-\gamma}\left((b_0+\frac{3}{4}b_1)\|\rho^{n+1}\|^2
++(b_2+\frac{b_1}{4})\|\rho^{n-1}\|^2
++\sum_{m=3}^{n+1}b_m\|\rho^{n+1-m}\|^2\right)\\
+\le k^{-\gamma}(b_{n}-b^{n+1}_n)\|\rho^1\|^2
++k^{-\gamma}(b_{n+1}-b_{n+1}^{n+1})\|\rho^0\|^2+\lambda(\|\rho^n\|^2+\|\rho^{n-1}\|^2)
+\end{multline*}
+
+Here, it is important to notice that 
+\begin{gather*}
+b_n^{n+1}-b_n=\frac{1}{2}n^{1-\alpha}+\frac{1}{2}(n+1)^{1-\alpha}
++\frac{1}{2-\alpha}n^{2-\alpha}
+-\frac{1}{2-\alpha}(n+1)^{2-\alpha}=O(n^{-1-\alpha})\\
+b_{n+1}^{n+1}-b_{n+1}=O(n^{-\gamma})
+\end{gather*}
+We take the summation, and define $E^n=\sum_{m=0}^n\|\rho^n\|_2^2$:
+\begin{multline*}
+-\frac{b_1}{8}k^{-\gamma}((\|\rho^{n+1}\|_2^2-\|\rho^0\|_2^2+\|2\rho^{n+1}-\rho^n\|_2^2-\|2\rho^1-\rho^{0}\|_2^2)\\
++\frac{1}{2}k^{-\gamma}\left((b_0+\frac{3}{4}b_1)E^{n+1}
++(b_2+\frac{b_1}{4})E^{n-1}
++\sum_{m=3}^{n+1}b_mE^{n+1-m}\right)
+\le k^{-\gamma}\sum_{n=0}^{n+1}((b_{n}-b^{n+1}_n))\|\rho_1\|^2\\
++k^{-\gamma}\sum_{n=0}^{n+1}(b_{n+1}-b_{n+1}^{n+1})\|\rho_0\|^2
++2\lambda E^n
+\end{multline*}
+To control the extra terms, we divide $n+1$ on both sides. Defining $F^n=\frac{1}{n}E^n$, and using $\frac{1}{n+1}E^m\le \frac{1}{m}E^m$ for $m\le n$, we have 
+\begin{multline*}
+\frac{1}{2}k^{-\gamma}\left((b_0+\frac{3}{4}b_1)F^{n+1}
++(b_2+\frac{b_1}{4})F^{n-1}
++\sum_{m=3}^{n+1}b_mF^{n+1-m}\right)
+\le\\
++C_1|b_1|k^{-\gamma}n^{-1}(\|\rho^0\|_2^2+\|\rho^1\|_2^2)
++  k^{-\gamma}\frac{1}{n+1}\sum_{n=0}^{n+1}((b_{n}-b^{n+1}_n))\|\rho_1\|^2\\
++k^{-\gamma}\frac{1}{n+1}\sum_{n=0}^{n+1}(b_{n+1}-b_{n+1}^{n+1})\|\rho_0\|^2+2\lambda F^n
+\end{multline*}
+Direct estimation tells us that $\frac{1}{n+1}\sum_{n=0}^{n+1}((b_{n}-b^{n+1}_n))\|\rho_1\|^2=O(n^{-\gamma})$ and $\frac{1}{n+1}\sum_{n=0}^{n+1}(b_{n+1}-b_{n+1}^{n+1})=O(n^{-\gamma})$.
+
+Using the variant version of the lemma, we can show that $F$ is bounded since $\tilde{b}=(b_0+\frac{3}{4}b_1,0, b_2+\frac{b_1}{4}, b_3,\ldots)$ satisfies the conditions in the lemma.
+\end{document}
